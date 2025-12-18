@@ -33,7 +33,9 @@ import { Task, TaskStatus } from "../../../core/models/task.model";
 
       <div style="margin-top:12px" class="flex space-between">
         <div style="flex:1; display:flex; gap:8px;">
-          <button type="submit" class="btn-primary" [disabled]="form.invalid">Save</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            Save
+          </button>
           <button type="button" (click)="cancel.emit()">Cancel</button>
         </div>
       </div>

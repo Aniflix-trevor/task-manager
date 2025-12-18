@@ -1,0 +1,293 @@
+# Toolkit Document: Angular Task Manager — Developer Reference
+
+---
+
+1. Title & Objective
+
+Title: Getting Started with the Angular Task Manager — A Practical Guide
+
+Objective: Provide a clear reference covering the chosen technology stack, setup instructions, a minimal working example, the AI prompts used during development with reflections, common errors encountered and how to resolve them, and curated references.
+
+Technology chosen: Angular (v16.x), TypeScript (5.1.x), RxJS, Reactive Forms, BehaviorSubject-based state, and localStorage for persistence.
+
+Why this tech?
+- Angular is a full-featured opinionated frontend framework that includes dependency injection, a router, and an official CLI which accelerates building SPA projects.
+- TypeScript gives strong typing and better DX for medium-sized frontend apps.
+- RxJS integrates natively with Angular's change-detection and supports reactive state patterns (BehaviorSubject used here).
+- The user requested an Angular solution; this project implements a Task Manager UI using best practices and feature modules.
+
+End goal: produce a polished Task Manager UI where tasks can be created, edited, deleted, filtered (by status), and searched. The app demonstrates a service-driven state model, Reactive Forms, routing, lazy-loaded feature module, and local persistence.
+
+---
+
+2. Quick Summary of the Technology
+
+What is Angular?
+- Angular is a platform and framework for building client applications in HTML and TypeScript. It provides modules, components, templates, a powerful CLI, DI, and the router.
+Where is it used?
+- Web applications requiring structure, maintainability and a component-driven architecture. Enterprise or mid-size SPA projects are a common use-case.
+One real-world example:
+- A project management dashboard aggregated into routes (tasks, timeline, settings) with reactive state and role-based features.
+
+Additional stack pieces used here:
+- TypeScript: typed superset of JavaScript.
+- RxJS: reactive streams and operators used in the TaskService to provide filtered views.
+- zone.js: Angular’s default change detection integration (NgZone) depends on zone.js.
+- Playwright: optional, used here to capture browser console logs for debugging.
+
+---
+
+3. System Requirements
+
+- OS: Linux / macOS / Windows (development environment tested on Linux)
+- Node.js: >= 18.x recommended (the project used Node-compatible toolchain)
+- npm: bundled with Node.js (or use yarn/pnpm if preferred)
+- Editor: VS Code (recommended), WebStorm, or any modern editor supporting TypeScript
+- CLI: Angular CLI is used via `npx ng` in the project
+- Packages installed via npm (listed in `package.json`)
+
+Minimum packages (from `package.json`):
+- @angular/core, @angular/cli, @angular/router, @angular/compiler-cli
+- rxjs
+- zone.js
+- typescript (set to 5.1.6 for compatibility in this workspace)
+
+Optional tools:
+- Playwright (optional) for headless browser capture and testing
+
+---
+
+4. Installation & Setup Instructions
+
+These steps assume you're in the project workspace already, or you cloned the repository that contains this project.
+
+1) Clone repo (if you haven't yet)
+
+```bash
+# example - replace with your repository url
+git clone <your-repo-url>
+cd task-manager
+```
+
+2) Install dependencies
+
+Note: This project was developed with npm and at times required `--legacy-peer-deps` to avoid strict peer conflicts in some Node environments. Try installing without it first; if you receive peer dependency errors, re-run with the flag.
+
+```bash
+# preferred
+npm install
+# or if you hit peer dependency problems
+npm install --legacy-peer-deps
+```
+
+3) Start dev server
+
+```bash
+npx ng serve --port 4200 --open=false
+# then open http://localhost:4200
+```
+
+4) Build (production)
+
+```bash
+npx ng build
+```
+
+5) Run headless console capture (optional — Playwright required)
+
+```bash
+node tools/capture-console.js http://127.0.0.1:4200/
+```
+
+Notes:
+- If you see a runtime error `NG0908: In this configuration Angular requires Zone.js`, ensure `zone.js` is imported in `src/main.ts` before bootstrapping Angular. The project includes `import 'zone.js/dist/zone';` in `src/main.ts`.
+- If the dev server reports a missing `root` property for the project in `angular.json`, ensure `angular.json` contains the `root` and `architect` entries. The project `angular.json` in this workspace is already configured minimally.
+
+---
+
+5. Minimal Working Example (Hello World)
+
+What this example does:
+- Demonstrates the absolute minimum code required to render an Angular App component that shows "Hello World" and boots using `platformBrowserDynamic`.
+
+Files (minimal snippets):
+
+`index.html`
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>HelloAngular</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <app-root>Loading...</app-root>
+    <script src="main.js"></script>
+  </body>
+</html>
+```
+
+`src/main.ts`
+```ts
+import 'zone.js/dist/zone'; // make sure zone.js is loaded first
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { NgModule, Component } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+@Component({
+  selector: 'app-root',
+  template: `<h1>Hello World</h1>`
+})
+class AppComponent {}
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule],
+  bootstrap: [AppComponent]
+})
+class AppModule {}
+
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
+```
+
+Expected output in browser: "Hello World" centered wherever your `index.html` places it. The dev server should compile this and serve the bundle.
+
+Notes: This is intentionally minimal — the real project includes routing, modules and Reactive Forms as described in the repo.
+
+---
+
+6. AI Prompt Journal
+
+This section records representative prompts used in the development session and a short reflection for each.
+
+1) Prompt used:
+"Can you help me scaffold a Task Manager frontend in Angular using best practices? I want a clear starting point (latest Angular, TypeScript, Reactive Forms, Router, RxJS, BehaviorSubject state, localStorage persistence, feature module layout, three routes, and filtering/search). Please provide a scaffold and key files I can expand on."
+- AI response summary: Scaffolds a full Angular app structure, creates service-driven state (BehaviorSubject), tasks feature module, components, pages, and wiring.
+- Brief excerpt addressing the problem: Provided `TaskService` with `BehaviorSubject<Task[]>` and `filteredTasks(status$, search$)`.
+- Evaluation: Very helpful — produced a near-complete project structure and files to iterate on.
+
+2) Prompt used:
+"I'm getting npm peer dependency errors when installing Angular packages — can you suggest compatible versions or practical workarounds so I can install and continue?"
+- AI response summary: Suggested pinning `zone.js` version compatible with Angular and setting TypeScript to a supported minor range for the builder.
+- Excerpt: Recommendation to set `typescript` to `5.1.6` and `zone.js` to `~0.13.0` to satisfy peer constraints.
+- Evaluation: Useful and pragmatic — saved time by suggesting exact versions that resolved ERESOLVE issues.
+
+3) Prompt used:
+"The app stays on 'Loading...' and the browser console shows NG0908 during bootstrap — can you help me diagnose and fix the runtime bootstrap error?"
+- AI response summary: Explaining NG0908 means Zone.js isn't loaded and recommending importing `zone.js/dist/zone` in `main.ts` before bootstrapping.
+- Excerpt: "Angular needs Zone.js by default for change detection and NgZone. When Zone.js isn't loaded the runtime throws NG0908 during bootstrap. Importing `zone.js` makes `NgZone` available and resolves NG0908."
+- Evaluation: Directly resolved the blocking runtime error.
+
+4) Prompt used:
+"Can you suggest CSS and small template changes to make the UI look more polished and user friendly? I plan to apply the changes; please provide specific edits and a theme toggle approach."
+- AI response summary: Rewrote `styles.css` to add a polished dark theme, updated components to use semantic classes and added a `theme` toggle to `AppComponent` that persists preference in `localStorage`.
+- Evaluation: Provided clear, usable UI improvements that were easy to apply across components.
+
+General reflection:
+- The assistant was most effective when I asked focused, coding-oriented questions (install fixes, runtime diagnostics, targeted UI improvements). For broader requests ("scaffold the app"), the assistant produced a helpful scaffold but I treated its output as a starting point and iterated with targeted prompts and fixes.
+
+---
+
+7. Common Issues & Fixes (from this project)
+
+1) ERESOLVE / peer dependency errors when installing
+- Symptoms: `npm install` fails with ERESOLVE about `zone.js` or `typescript` peer versions.
+- Fix: Align `zone.js` and `typescript` to versions compatible with the Angular devkit used. In this workspace we used:
+  - `zone.js`: `~0.13.0`
+  - `typescript`: `5.1.6` (satisfies builder constraints: <5.2)
+- Tip: Try `npm install` first; if it fails, `npm install --legacy-peer-deps` can be used as a fallback.
+
+2) Runtime ReferenceError: `process` is not defined (browser)
+- Symptoms: `main.ts` referenced `process.env['NODE_ENV']` or similar and the browser throws a ReferenceError blocking bootstrap.
+- Fix: Remove Node-specific `process` references from browser code. Use Angular environment files or build-time flags.
+
+3) NG0908: "In this configuration Angular requires Zone.js"
+- Symptoms: App remains at `Loading...` and console shows NG0908 during `bootstrapModule`.
+- Fix: Ensure `zone.js` is imported before Angular bootstrapping. Example in `src/main.ts`:
+  ```ts
+  import 'zone.js/dist/zone';
+  import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+  // ... bootstrap
+  ```
+
+4) Missing `root` in `angular.json`
+- Symptoms: `ng serve` fails with "Project missing required property 'root'"
+- Fix: Ensure `angular.json` contains a `root` and `architect`/`projects` section for the application. The workspace file included here provides a minimal configuration.
+
+5) TypeScript typing errors with `FormControl` and `startWith`
+- Symptoms: `valueChanges` types may be `string | null` and `startWith` can cause type mismatch under `strict` flags.
+- Fix: Create non-nullable FormControl instances: `new FormControl<string>('', { nonNullable: true })` and use `startWith(this.myControl.value ?? '')`.
+
+6) CommonJS warning for `zone.js/dist/zone`
+- Symptom: Build warns that `zone.js/dist/zone` is a CommonJS dependency and may cause optimization bailouts.
+- Fix/Workarounds:
+  - Keep the import (Angular requires zone.js) and accept the warning; affected only during bundle optimizations.
+  - Or configure `allowedCommonJsDependencies` in `angular.json`:
+    ```json
+    "architect": {
+      "build": {
+        "options": {
+          "allowedCommonJsDependencies": ["zone.js"]
+        }
+      }
+    }
+    ```
+  - Many apps keep `zone.js` imported and tolerate the warning, as switching to an ESM distribution is not always possible.
+
+Useful links for troubleshooting:
+- StackOverflow threads about `NG0908` and Zone.js
+- Angular CLI issues for `angular.json` project schema
+
+---
+
+8. References
+
+Official docs:
+- Angular: https://angular.io
+- Angular CLI: https://angular.io/cli
+- RxJS: https://rxjs.dev
+- TypeScript: https://www.typescriptlang.org
+- zone.js: https://github.com/angular/zone.js
+- Playwright: https://playwright.dev
+
+Tutorials and guides:
+- Angular QuickStart / Tour of Heroes (official guide): https://angular.io/tutorial
+- Angular Style Guide: https://angular.io/guide/styleguide
+
+Helpful blog posts:
+- "Understanding NgZone and Zone.js" (search results vary) — good to understand change detection
+- "Angular performance tips" — addresses CommonJS dependencies and optimization
+
+---
+
+Appendix: Quick commands summary
+
+```bash
+# install deps
+npm install
+# or with legacy peer deps if needed
+npm install --legacy-peer-deps
+
+# local dev server
+npx ng serve --port 4200 --open=false
+
+# build
+npx ng build
+
+# run Playwright capture (optional)
+node tools/capture-console.js http://127.0.0.1:4200/
+```
+
+---
+
+If you would like, I can:
+- Convert this text into a Markdown file (`TOOLKIT.md`) or a PDF and add it to the repo.
+- Add screenshots of the running app and terminal outputs.
+- Add an automated Playwright smoke test verifying the UI loads and that the theme toggle works.
+
+
+
+---
+Document created by the development assistant as a reference for the Angular Task Manager project.
